@@ -1,9 +1,10 @@
 package scaleway
 
 import (
-	"log"
+	"fmt"
 	"time"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/scaleway/scaleway-cli/pkg/api"
 )
 
@@ -47,26 +48,21 @@ func deleteServerSafe(s *api.ScalewayAPI, serverID string) error {
 	return nil
 }
 
-func waitForServerState(s *api.ScalewayAPI, serverID string, targetState string) error {
-	var server *api.ScalewayServer
-	var err error
+// NOTE copied from github.com/scaleway/scaleway-cli/pkg/api/helpers.go
+// the helpers.go file pulls in quite a lot dependencies, and they're just convenience wrappers anyway
 
-	var currentState string
+func waitForServerState(scaleway *api.ScalewayAPI, serverID string, targetState string) error {
+	return resource.Retry(10*time.Minute, func() *resource.RetryError {
+		s, err := scaleway.GetServer(serverID)
 
-	for {
-		server, err = s.GetServer(serverID)
 		if err != nil {
-			return err
+			return resource.NonRetryableError(err)
 		}
-		if currentState != server.State {
-			log.Printf("[DEBUG] Server changed state to %q\n", server.State)
-			currentState = server.State
-		}
-		if server.State == targetState {
-			break
-		}
-		time.Sleep(1 * time.Second)
-	}
 
-	return nil
+		if s.State != targetState {
+			return resource.RetryableError(fmt.Errorf("Waiting for server to enter %q state", targetState))
+		}
+
+		return nil
+	})
 }
