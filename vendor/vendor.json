@@ -1689,6 +1689,12 @@
 			"revision": "d41af8bb6a7704f00bc3b7cba9355ae6a5a80048"
 		},
 		{
+			"checksumSHA1": "LL477G8suEMbJccfDpLP2LhRxUk=",
+			"path": "github.com/scaleway/scaleway-cli",
+			"revision": "37f3812eedfde74398fc6672c9740686b5fe92f5",
+			"revisionTime": "2016-10-18T10:01:53Z"
+		},
+		{
 			"checksumSHA1": "DWJoWDXcRi4HUCyxU6dLVVjR4pI=",
 			"path": "github.com/sethvargo/go-fastly",
 			"revision": "b0a18d43769d55365d4fbd9ba36493e5c0dcd8f5",
