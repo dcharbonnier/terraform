@@ -90,6 +90,12 @@ func resourceScalewayServerCreate(d *schema.ResourceData, m interface{}) error {
 		SecurityGroup: d.Get("security_group").(string),
 	}
 
+	//
+	//
+	// server.Volumes = make(map[string]string)
+	//
+	// AdditionalVolumes ?
+
 	server.DynamicIPRequired = Bool(d.Get("dynamic_ip_required").(bool))
 	server.CommercialType = d.Get("type").(string)
 
@@ -205,7 +211,7 @@ func resourceScalewayServerUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceScalewayServerDelete(d *schema.ResourceData, m interface{}) error {
 	scaleway := m.(*Client).scaleway
 
-	def, err := scaleway.GetServer(d.Id())
+	_, err := scaleway.GetServer(d.Id())
 	if err != nil {
 		if serr, ok := err.(api.ScalewayAPIError); ok {
 			if serr.StatusCode == 404 {
@@ -216,11 +222,20 @@ func resourceScalewayServerDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	err = deleteServerSafe(scaleway, def.Identifier)
-	if err != nil {
-		return err
+	err = scaleway.DeleteServer(d.Id())
+	if err == nil {
+		waitForServerDelete(scaleway, d.Id())
+		d.SetId("")
+		return nil
 	}
 
-	d.SetId("")
-	return nil
+	err = scaleway.PostServerAction(d.Id(), "terminate")
+	if err == nil {
+		waitForServerDelete(scaleway, d.Id())
+		d.SetId("")
+		return nil
+	}
+
+	return err
+
 }

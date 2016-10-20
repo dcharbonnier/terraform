@@ -20,33 +20,6 @@ func String(val string) *string {
 // NOTE copied from github.com/scaleway/scaleway-cli/pkg/api/helpers.go
 // the helpers.go file pulls in quite a lot dependencies, and they're just convenience wrappers anyway
 
-func deleteServerSafe(s *api.ScalewayAPI, serverID string) error {
-	server, err := s.GetServer(serverID)
-	if err != nil {
-		return err
-	}
-
-	if server.State != "stopped" {
-		if err := s.PostServerAction(serverID, "poweroff"); err != nil {
-			return err
-		}
-		if err := waitForServerState(s, serverID, "stopped"); err != nil {
-			return err
-		}
-	}
-
-	if err := s.DeleteServer(serverID); err != nil {
-		return err
-	}
-	if rootVolume, ok := server.Volumes["0"]; ok {
-		if err := s.DeleteVolume(rootVolume.Identifier); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func waitForServerState(s *api.ScalewayAPI, serverID string, targetState string) error {
 	var server *api.ScalewayServer
 	var err error
@@ -69,4 +42,19 @@ func waitForServerState(s *api.ScalewayAPI, serverID string, targetState string)
 	}
 
 	return nil
+}
+
+func waitForServerDelete(s *api.ScalewayAPI, serverID string) {
+	var err error
+
+	for {
+		_, err = s.GetServer(serverID)
+		if serr, ok := err.(api.ScalewayAPIError); ok {
+			if serr.StatusCode == 404 {
+				break
+			}
+		}
+
+		time.Sleep(1 * time.Second)
+	}
 }
