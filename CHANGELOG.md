@@ -20,7 +20,8 @@ FEATURES:
  * **New Resource:** `azurerm_eventhub_namespace` [GH-9297]
  * **New Resource:** `cloudstack_security_group` [GH-9103]
  * **New DataSource:** `azurerm_client_config` [GH-9478]
- * **New Core Interpolation:** `title` [GH-9087]
+ * **New Interpolation Function:** `title` [GH-9087]
+ * **New Interpolation Function:** `zipmap` [GH-9627]
 
 IMPROVEMENTS:
 
@@ -35,6 +36,8 @@ IMPROVEMENTS:
  * provider/google: enhance service scope list [GH-9442]
  * provider/openstack: Added value_specs to openstack_networking_port_v2, allowing vendor information [GH-9551]
  * provider/openstack: Added value_specs to openstack_networking_floatingip_v2, allowing vendor information [GH-9552]
+ * provider/openstack: Added value_specs to openstack_compute_keypair_v2, allowing vendor information [GH-9554]
+ * provider/openstack: Allow any protocol in openstack_fw_rule_v1 [GH-9617]
 
 BUG FIXES:
 
@@ -50,6 +53,7 @@ BUG FIXES:
  * provider/aws: Exposed aws_api_gw_domain_name.certificate_upload_date attribute [GH-9533]
  * provider/aws: fix aws_elasticache_replication_group for Redis in cluster mode [GH-9601]
  * provider/aws: Validate regular expression passed via the ami data_source `name_regex` attribute. [GH-9622]
+ * provider/aws: Bug fix for NoSuckBucket on Destroy of aws_s3_bucket_policy [GH-9641]
  * provider/azurerm: Fix Azure RM loadbalancer rules validation [GH-9468]
  * provider/azurerm: Fix servicebus_topic values when using the Update func to stop perpetual diff [GH-9323]
  * provider/consul: Change to consul_service resource to introduce a `service_id` parameter [GH-9366]
